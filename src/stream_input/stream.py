@@ -2,7 +2,6 @@ from celery import Celery
 from pubnub.callbacks import SubscribeCallback
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub import PubNub
-from pprint import pprint
 import os
 
 class MySubscribeCallback(SubscribeCallback):
@@ -10,10 +9,10 @@ class MySubscribeCallback(SubscribeCallback):
         pass
 
     def presence(self, pubnub, presence):
-        pprint(presence.__dict__)
+        pass
 
     def message(self, pubnub, message):
-        pprint(message.__dict__)
+        app.send_task('message_location.fetch_message_location', kwargs={'message': message}).delay()
 
 
 app = Celery("stream")
@@ -27,11 +26,8 @@ pubnub = PubNub(pnconfig)
 pubnub.add_listener(MySubscribeCallback())
 pubnub.subscribe().channels("keep-alive").execute()
 
-print("Waiting for task to start subscribe...")
-
-
 @app.task
-def start(channel_name, key):
+def start(channel_name):
    pubnub.subscribe().channels(channel_name).execute()
 
 @app.task

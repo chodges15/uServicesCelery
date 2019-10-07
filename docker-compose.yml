@@ -10,8 +10,6 @@ services:
     depends_on:
       - rabbitmq
     restart: 'no'
-    volumes:
-     - ./src/http_interface/:/app
     ports:
       - "80:5000"
   stream-input:
@@ -22,7 +20,13 @@ services:
     depends_on:
       - rabbitmq
     restart: 'no'
-    volumes: 
-      - ./src/stream-input:/app
+  message-location:
+    build: ./src/message_location
+    image: message-location
+    command: [celery, worker, --app=message_location.app, --concurrency=5, --loglevel=INFO]
+    environment: *env
+    depends_on:
+      - rabbitmq
+    restart: 'no'
   rabbitmq:
     image: rabbitmq:3.8.0
