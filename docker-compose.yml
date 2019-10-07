@@ -1,10 +1,12 @@
 version: '3.4'
 services:
-  celery:
+  http-interface:
     build: ./src/http_interface
     image: http-interface
     environment: &env 
       - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672
+      - PUBNUB_SUBSCRIBE_KEY=sub-c-78806dd4-42a6-11e4-aed8-02ee2ddab7fe
+      - PUBNUB_CHANNEL=pubnub-twitter
     depends_on:
       - rabbitmq
     restart: 'no'
@@ -12,5 +14,15 @@ services:
      - ./src/http_interface/:/app
     ports:
       - "80:5000"
+  stream-input:
+    build: ./src/stream_input
+    image: stream-input
+    command: [celery, worker, --app=stream.app, --concurrency=10, --loglevel=INFO]
+    environment: *env
+    depends_on:
+      - rabbitmq
+    restart: 'no'
+    volumes: 
+      - ./src/stream-input:/app
   rabbitmq:
     image: rabbitmq:3.8.0
