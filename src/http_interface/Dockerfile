@@ -6,5 +6,8 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 RUN rm requirements.txt  
 
-COPY . /
-WORKDIR /app
+COPY . /opt/app
+WORKDIR /opt/app
+
+RUN chmod 775 entrypoint.sh
+CMD [ "./entrypoint.sh" ]
