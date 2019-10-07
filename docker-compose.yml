@@ -1,0 +1,15 @@
+version: '3.4'
+services:
+  celery:
+    build: ./src/http_interface
+    image: http-interface
+    command: [celery, worker, --app=http_interface.celery, --concurrency=10, --loglevel=INFO]
+    environment: &env 
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    restart: 'no'
+    volumes:
+     - ./src/http_interface/:/app
+  rabbitmq:
+    image: rabbitmq:3.8.0
