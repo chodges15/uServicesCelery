@@ -2,4 +2,5 @@ celery==4.3.0
 Flask==1.0.2
 Flask-SocketIO==3.1.2
 Flask-RestPlus==0.13.0
+requests==2.22.0
 

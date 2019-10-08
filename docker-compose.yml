@@ -16,7 +16,7 @@ services:
   stream-input:
     build: ./src/stream_input
     image: stream-input
-    command: [celery, worker, --app=stream.app, --concurrency=10, --loglevel=INFO, -Q, 'stream_queue']
+    command: [celery, worker, --app=stream.app, --concurrency=1, --loglevel=INFO, -Q, 'stream_queue']
     environment: *env
     depends_on:
       - rabbitmq
@@ -24,7 +24,7 @@ services:
   message-location:
     build: ./src/message_location
     image: message-location
-    command: [celery, worker, --app=message_location.app, --concurrency=5, --loglevel=INFO]
+    command: [celery, worker, --app=message_location.app, --concurrency=5, --loglevel=INFO, -Q, 'message_location_queue']
     environment: *env
     depends_on:
       - rabbitmq
