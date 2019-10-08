@@ -8,6 +8,7 @@ services:
       - CELERY_RESULT_BACKEND=rpc://
       - PUBNUB_SUBSCRIBE_KEY=sub-c-78806dd4-42a6-11e4-aed8-02ee2ddab7fe
       - PUBNUB_CHANNEL=pubnub-twitter
+      - FLOWER_PORT=8888
     depends_on:
       - rabbitmq
     restart: 'no'
@@ -31,3 +32,8 @@ services:
     restart: 'no'
   rabbitmq:
     image: rabbitmq:3.8.0
+  flower:
+    image: mher/flower
+    environment: *env
+    ports:
+      - 8888:8888
