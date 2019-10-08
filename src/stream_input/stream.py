@@ -16,6 +16,11 @@ class MySubscribeCallback(SubscribeCallback):
 
 
 app = Celery("stream")
+app.conf.task_routes = {
+    'http.*': {'queue': 'http_queue'},
+    'stream.*': {'queue': 'stream_queue'},
+    'message_location.*': {'queue': 'message_location_queue'},
+}
 
 pnconfig = PNConfiguration()
 pnconfig.ssl = False
@@ -26,11 +31,13 @@ pubnub = PubNub(pnconfig)
 pubnub.add_listener(MySubscribeCallback())
 pubnub.subscribe().channels("keep-alive").execute()
 
-@app.task
+
+@app.task(queue="stream_input")
 def start(channel_name):
    pubnub.subscribe().channels(channel_name).execute()
 
-@app.task
+
+@app.task(queue="stream_input")
 def stop(channel_name):
     pubnub.unsubscribe().channels(channel_name)
 

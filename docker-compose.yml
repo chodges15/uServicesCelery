@@ -5,6 +5,7 @@ services:
     image: http-interface
     environment: &env 
       - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672
+      - CELERY_RESULT_BACKEND=rpc://
       - PUBNUB_SUBSCRIBE_KEY=sub-c-78806dd4-42a6-11e4-aed8-02ee2ddab7fe
       - PUBNUB_CHANNEL=pubnub-twitter
     depends_on:
@@ -15,7 +16,7 @@ services:
   stream-input:
     build: ./src/stream_input
     image: stream-input
-    command: [celery, worker, --app=stream.app, --concurrency=10, --loglevel=INFO]
+    command: [celery, worker, --app=stream.app, --concurrency=10, --loglevel=INFO, -Q, 'stream_queue']
     environment: *env
     depends_on:
       - rabbitmq

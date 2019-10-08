@@ -7,4 +7,4 @@ set -m
 python ./http_interface.py&
 
 # Start the Celery worker for the frontend
-celery --app=http_interface.celery worker --concurrency=10 --loglevel=INFO
+celery --app=http_interface.celery worker --concurrency=10 --loglevel=INFO -Q http_queue

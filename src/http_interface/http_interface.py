@@ -11,7 +11,12 @@ api = Api(app, version=3)
 socketio = SocketIO(app)
 
 celery = Celery('http_interface')
-celery.conf.update(app.config)
+celery.conf.task_routes = {
+    'http.*': {'queue': 'http_queue'},
+    'stream.*': {'queue': 'stream_queue'},
+    'message_location.*': {'queue': 'message_location_queue'},
+}
+#celery.conf.update(app.config)
 
 name_space = api.namespace('streams', description="APIs to control data streams")
 
